@@ -1,235 +1,39 @@
 {
   "kind": "build_request",
-  "title": "Implement role-based user system, separate Home/Updates feeds, and file upload for profile photos",
+  "title": "Automatically grant administrator role to users with username 'admin'",
   "projectName": "Sanchaari",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-47",
-      "text": "Add a 'role' field to the UserProfile data model in backend/main.mo with possible values: 'common_user', 'author', 'group_head', 'content_creator', 'subscriber', 'administrator'",
+      "id": "REQ-72",
+      "text": "Modify the user registration function in backend/main.mo to automatically check if the username is 'admin' (case-insensitive) and assign the 'administrator' role to that user account, overriding any role selection from the registration form",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "users can be identified as common user,author, group head,content creator,subscriber"
+          "Admin username is one whose account username is admin that's the admin master account"
         ]
       },
       "acceptanceCriteria": [
-        "UserProfile type includes a 'role' field with variant type covering all 6 roles",
-        "Default role for new users is 'common_user' unless specified during registration"
-      ]
-    },
-    {
-      "id": "REQ-48",
-      "text": "Update the user registration process in backend/main.mo to accept a role parameter and assign the selected role to the new user profile",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "these should be decided during signup"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Registration function accepts role as input parameter",
-        "Role is validated against allowed values before profile creation",
-        "Administrator role cannot be selected during normal signup"
-      ]
-    },
-    {
-      "id": "REQ-49",
-      "text": "Add role selection dropdown to the RegisterPage.tsx signup form with options: Common User, Author, Group Head, Content Creator, Subscriber",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "these should be decided during signup"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dropdown displays all 5 user-selectable roles with user-friendly labels",
-        "Selected role is passed to the backend registration function",
-        "Administrator option is not available in the dropdown"
-      ]
-    },
-    {
-      "id": "REQ-50",
-      "text": "Create a dedicated administrator account in backend/main.mo with hardcoded credentials (principal ID) that is pre-initialized with administrator role",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "adminstrator should be unique login details provided by you"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Administrator principal is stored as a constant in the backend",
-        "Administrator profile is automatically created on canister initialization",
-        "Administrator role is assigned only to this specific principal"
-      ]
-    },
-    {
-      "id": "REQ-51",
-      "text": "Create a new HomePage.tsx that displays all posts regardless of verification status, separate from the Updates/News feed",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "make home page as public posts page which feeds all types of posts"
-        ]
-      },
-      "acceptanceCriteria": [
-        "HomePage route '/' displays all posts using the existing news feed query",
-        "Posts are shown in reverse chronological order",
-        "All post interaction features (like, comment, share, save) remain functional"
-      ]
-    },
-    {
-      "id": "REQ-52",
-      "text": "Update NewsPage.tsx to filter and display only posts from verified users",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "in news feed that is updates page only verified news can posts and share live to all by verified users"
-        ]
-      },
-      "acceptanceCriteria": [
-        "NewsPage filters posts to show only those where author.verified is true",
-        "Unverified users' posts are excluded from the Updates feed",
-        "Verified badge is displayed next to author names"
-      ]
-    },
-    {
-      "id": "REQ-53",
-      "text": "Restrict post creation on NewsPage to only verified users by hiding or disabling the CreatePostForm for unverified users",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "only verified news can posts"
-        ]
-      },
-      "acceptanceCriteria": [
-        "CreatePostForm is only visible/enabled on NewsPage for verified users",
-        "Unverified users see a message explaining that only verified users can post on Updates",
-        "Post creation remains available to all authenticated users on HomePage"
-      ]
-    },
-    {
-      "id": "REQ-54",
-      "text": "Update App.tsx routing to ensure '/' route renders HomePage with all posts and '/news' or '/updates' route renders NewsPage with verified-only posts",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "home page as public posts page",
-          "updates page only verified"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Home route '/' is distinct from Updates/News route",
-        "Bottom navigation 'Home' links to '/'",
-        "Bottom navigation 'Updates' links to '/news' or '/updates'",
-        "Both routes have appropriate titles and components"
-      ]
-    },
-    {
-      "id": "REQ-55",
-      "text": "Replace the profile photo URL input field in ProfilePage.tsx with a file upload dropbox component that accepts drag-and-drop or file selection from the user's device",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "it should not through image url it should be dropbox"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dropbox interface allows users to drag-and-drop image files or click to select files",
-        "Accepted file types are image formats (jpg, jpeg, png, gif, webp)",
-        "File size validation prevents uploads larger than reasonable limits (e.g., 5MB)",
-        "Preview of selected image is shown before upload"
-      ]
-    },
-    {
-      "id": "REQ-56",
-      "text": "Implement image file upload handling that converts uploaded files to data URLs or blob storage and updates the user's profile photo",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "profile photo uploading, it should not through image url it should be dropbox"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Uploaded image files are processed client-side or sent to backend",
-        "Backend stores image data (as blob, data URL, or generates a URL)",
-        "User profile photo is updated with the new image reference",
-        "Profile photo displays correctly throughout the application after upload"
-      ]
-    },
-    {
-      "id": "REQ-57",
-      "text": "Update the backend getUserProfile and related functions to include the user's role in the returned profile data",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Profile responses include the role field",
-        "Frontend can access and display user roles when needed",
-        "Role information is available for authorization checks"
-      ]
-    },
-    {
-      "id": "REQ-58",
-      "text": "Update backend migration.mo to include migration logic for the new 'role' field when upgrading from previous UserProfile versions, defaulting existing users to 'common_user'",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Migration safely adds role field to existing user profiles",
-        "Existing users are assigned 'common_user' role by default",
-        "No data loss occurs during migration"
+        "When a user registers with username 'admin', they are automatically assigned the 'administrator' role regardless of the role they selected during signup",
+        "The username check is case-insensitive (e.g., 'Admin', 'ADMIN', 'admin' all trigger admin role assignment)",
+        "The admin user has immediate access to the admin dashboard at /admin route after registration",
+        "Other usernames are unaffected and receive their selected role as normal"
       ]
     }
   ],
   "constraints": [
-    "Maintain single-actor architecture in backend/main.mo",
-    "Do not modify immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, components/ui/*",
-    "Administrator role must not be selectable during normal user registration",
-    "Updates feed must only show posts from verified users",
-    "Home feed must show all posts regardless of verification status"
+    "Do not change the backend/main.mo single-actor architecture",
+    "Do not modify the existing UserProfile data model fields",
+    "Do not change the frontend registration form UI or role selection dropdown"
   ],
   "nonGoals": [
-    "Implementing permission systems or role-based access control beyond post creation restrictions",
-    "Creating separate admin dashboard interface in this build",
-    "Implementing external image hosting or CDN integration",
-    "Adding role-based UI customization or different layouts per role"
+    "Creating separate admin login credentials or authentication system",
+    "Adding hardcoded principal IDs for admin access",
+    "Modifying the admin dashboard access control logic",
+    "Changing how other roles are assigned during registration"
   ],
   "imageRequirements": {
     "required": [],

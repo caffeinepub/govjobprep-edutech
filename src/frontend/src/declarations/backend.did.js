@@ -57,12 +57,22 @@ export const UserRole = IDL.Variant({
   'subscriber' : IDL.Null,
   'administrator' : IDL.Null,
 });
-export const UserProfile = IDL.Record({
+export const UserProfileSummary = IDL.Record({
+  'principal' : IDL.Principal,
+  'verified' : IDL.Bool,
+  'username' : IDL.Text,
+  'displayName' : IDL.Text,
+  'role' : UserRole,
+  'registrationTimestamp' : IDL.Int,
+  'profilePhotoUrl' : IDL.Opt(IDL.Text),
+});
+export const UserProfileV2 = IDL.Record({
   'verified' : IDL.Bool,
   'username' : IDL.Text,
   'displayName' : IDL.Text,
   'role' : UserRole,
   'savedPosts' : IDL.Vec(PostId),
+  'registrationTimestamp' : IDL.Int,
   'profilePhotoUrl' : IDL.Opt(IDL.Text),
 });
 export const UserProfileInput = IDL.Record({
@@ -109,14 +119,15 @@ export const idlService = IDL.Service({
   'deletePost' : IDL.Func([PostId], [], []),
   'getAllComments' : IDL.Func([], [IDL.Vec(Comment)], ['query']),
   'getAllPosts' : IDL.Func([], [IDL.Vec(NewsPost)], ['query']),
-  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getAllUsers' : IDL.Func([], [IDL.Vec(UserProfileSummary)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfileV2)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole__1], ['query']),
   'getCommentsForPost' : IDL.Func([PostId], [IDL.Vec(Comment)], ['query']),
   'getPostById' : IDL.Func([PostId], [IDL.Opt(NewsPost)], ['query']),
   'getSavedPosts' : IDL.Func([], [IDL.Vec(NewsPost)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
-      [IDL.Opt(UserProfile)],
+      [IDL.Opt(UserProfileV2)],
       ['query'],
     ),
   'getUserRole' : IDL.Func([IDL.Principal], [UserRole], ['query']),
@@ -128,6 +139,7 @@ export const idlService = IDL.Service({
   'sharePost' : IDL.Func([PostId], [], []),
   'unsavePost' : IDL.Func([PostId], [], []),
   'unverifyUser' : IDL.Func([IDL.Principal], [], []),
+  'updateUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'verifyUser' : IDL.Func([IDL.Principal], [], []),
 });
 
@@ -183,12 +195,22 @@ export const idlFactory = ({ IDL }) => {
     'subscriber' : IDL.Null,
     'administrator' : IDL.Null,
   });
-  const UserProfile = IDL.Record({
+  const UserProfileSummary = IDL.Record({
+    'principal' : IDL.Principal,
+    'verified' : IDL.Bool,
+    'username' : IDL.Text,
+    'displayName' : IDL.Text,
+    'role' : UserRole,
+    'registrationTimestamp' : IDL.Int,
+    'profilePhotoUrl' : IDL.Opt(IDL.Text),
+  });
+  const UserProfileV2 = IDL.Record({
     'verified' : IDL.Bool,
     'username' : IDL.Text,
     'displayName' : IDL.Text,
     'role' : UserRole,
     'savedPosts' : IDL.Vec(PostId),
+    'registrationTimestamp' : IDL.Int,
     'profilePhotoUrl' : IDL.Opt(IDL.Text),
   });
   const UserProfileInput = IDL.Record({
@@ -235,14 +257,15 @@ export const idlFactory = ({ IDL }) => {
     'deletePost' : IDL.Func([PostId], [], []),
     'getAllComments' : IDL.Func([], [IDL.Vec(Comment)], ['query']),
     'getAllPosts' : IDL.Func([], [IDL.Vec(NewsPost)], ['query']),
-    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getAllUsers' : IDL.Func([], [IDL.Vec(UserProfileSummary)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfileV2)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole__1], ['query']),
     'getCommentsForPost' : IDL.Func([PostId], [IDL.Vec(Comment)], ['query']),
     'getPostById' : IDL.Func([PostId], [IDL.Opt(NewsPost)], ['query']),
     'getSavedPosts' : IDL.Func([], [IDL.Vec(NewsPost)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
-        [IDL.Opt(UserProfile)],
+        [IDL.Opt(UserProfileV2)],
         ['query'],
       ),
     'getUserRole' : IDL.Func([IDL.Principal], [UserRole], ['query']),
@@ -254,6 +277,7 @@ export const idlFactory = ({ IDL }) => {
     'sharePost' : IDL.Func([PostId], [], []),
     'unsavePost' : IDL.Func([PostId], [], []),
     'unverifyUser' : IDL.Func([IDL.Principal], [], []),
+    'updateUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'verifyUser' : IDL.Func([IDL.Principal], [], []),
   });
 };

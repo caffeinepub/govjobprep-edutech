@@ -1,14 +1,26 @@
 import { Link, useRouterState } from '@tanstack/react-router';
-import { Home, Newspaper, BookOpen, User } from 'lucide-react';
+import { Home, Newspaper, BookOpen, User, Shield } from 'lucide-react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { useActor } from '../hooks/useActor';
+import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { identity, login, clear, loginStatus } = useInternetIdentity();
+  const { actor, isFetching: actorFetching } = useActor();
   const queryClient = useQueryClient();
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
+
+  const { data: isAdmin, isLoading: checkingAdmin } = useQuery({
+    queryKey: ['isAdmin'],
+    queryFn: async () => {
+      if (!actor) return false;
+      return actor.isCallerAdmin();
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+  });
 
   const handleAuth = async () => {
     if (identity) {
@@ -28,6 +40,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const isActive = (path: string) => currentPath === path;
+
+  const showAdminNav = !checkingAdmin && isAdmin && identity;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -62,7 +76,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-around h-16">
+          <div className={`flex items-center ${showAdminNav ? 'justify-between' : 'justify-around'} h-16`}>
             <Link
               to="/"
               className={`flex flex-col items-center justify-center space-y-1 px-4 py-2 rounded-lg transition-colors ${
@@ -104,6 +118,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <User className="w-5 h-5" />
               <span className="text-xs font-medium">Profile</span>
             </Link>
+
+            {showAdminNav && (
+              <Link
+                to="/admin"
+                className={`flex flex-col items-center justify-center space-y-1 px-4 py-2 rounded-lg transition-colors ${
+                  isActive('/admin') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Shield className="w-5 h-5" />
+                <span className="text-xs font-medium">Admin</span>
+              </Link>
+            )}
           </div>
         </div>
       </nav>

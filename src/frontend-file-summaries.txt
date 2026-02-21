@@ -1,7 +1,7 @@
 {
-  "frontend/src/App.tsx": "Main application component with TanStack Router setup, authentication guards, profile guards, and route definitions for all pages.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including user profiles, posts, comments, and save/unsave functionality with proper type handling.",
-  "frontend/src/components/Layout.tsx": "Application layout with header, bottom navigation (Home, Updates, Resources, Profile), and footer with proper active state highlighting.",
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, authentication guards, profile guards, and route definitions including the new /admin route.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including user profiles, posts, comments, save/unsave functionality, and admin-specific operations (getAllUsers, updateUserRole, grantVerification, revokeVerification).",
+  "frontend/src/components/Layout.tsx": "Application layout with header, bottom navigation (Home, Updates, Resources, Profile, and conditionally Admin for administrators), and footer with proper active state highlighting.",
   "frontend/src/pages/HomePage.tsx": "Home page displaying all posts from the community with full news feed functionality, post creation form, and save/unsave features.",
   "frontend/src/pages/TestsPage.tsx": "Displays all available mock tests in a grid layout with test metadata and properly typed navigation links using params.",
   "frontend/src/pages/TestTakingPage.tsx": "Interactive test-taking interface with question navigation, answer selection, progress tracking, and submission using search params for result data.",
@@ -15,5 +15,9 @@
   "frontend/src/pages/NewsPage.tsx": "Updates page showing only verified users' posts with filtering, verified badge display, and restricted post creation for verified users only.",
   "frontend/src/pages/PostDetailPage.tsx": "Post detail page displaying full post content with comments section, like/share/save functionality, and comment form for authenticated users.",
   "frontend/index.html": "HTML entry point with updated title \"Sanchaari\"",
-  "frontend/src/components/ProfilePhotoUpload.tsx": "Drag-and-drop file upload component for profile photos with preview, progress tracking, file validation, and ExternalBlob integration."
+  "frontend/src/components/ProfilePhotoUpload.tsx": "Drag-and-drop file upload component for profile photos with preview, progress tracking, file validation, and ExternalBlob integration.",
+  "frontend/src/pages/AdminDashboardPage.tsx": "Admin dashboard page that checks for administrator role and displays the user management interface with access control.",
+  "frontend/src/components/UserManagementTable.tsx": "Comprehensive user management table with search, filtering by role and verification status, role updates, verification management, and user profile viewing.",
+  "frontend/src/components/UserProfileModal.tsx": "Modal dialog displaying detailed user profile information including stats, recent posts, and activity metrics for admin review.",
+  "frontend/src/main.tsx": "Application entry point with Toaster component for toast notifications used throughout the admin dashboard."
 }

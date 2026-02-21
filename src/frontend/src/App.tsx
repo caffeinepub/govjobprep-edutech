@@ -8,6 +8,7 @@ import PostDetailPage from './pages/PostDetailPage';
 import ResourcesPage from './pages/ResourcesPage';
 import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import { InternetIdentityProvider } from './hooks/useInternetIdentity';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useGetUserProfile } from './hooks/useQueries';
@@ -135,6 +136,18 @@ const profileRoute = createRoute({
   ),
 });
 
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin',
+  component: () => (
+    <AuthGuard>
+      <ProfileGuard>
+        <AdminDashboardPage />
+      </ProfileGuard>
+    </AuthGuard>
+  ),
+});
+
 const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/register',
@@ -151,6 +164,7 @@ const routeTree = rootRoute.addChildren([
   postDetailRoute,
   resourcesRoute,
   profileRoute,
+  adminRoute,
   registerRoute,
 ]);
 

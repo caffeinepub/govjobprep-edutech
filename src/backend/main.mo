@@ -1,4 +1,3 @@
-import Migration "migration";
 import List "mo:core/List";
 import Array "mo:core/Array";
 import Runtime "mo:core/Runtime";
@@ -6,12 +5,14 @@ import Map "mo:core/Map";
 import Nat "mo:core/Nat";
 import Time "mo:core/Time";
 import Principal "mo:core/Principal";
+import Migration "migration";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import MixinStorage "blob-storage/Mixin";
 import Storage "blob-storage/Storage";
 import AccessControl "authorization/access-control";
 
+// Use migration to persist state and handle upgrades.
 (with migration = Migration.run)
 actor {
   // Initialize the access control system
@@ -48,13 +49,14 @@ actor {
     timestamp : Int;
   };
 
-  public type UserProfile = {
+  public type UserProfileV2 = {
     username : Text;
     displayName : Text;
     profilePhotoUrl : ?Text;
     verified : Bool;
     savedPosts : [PostId];
     role : UserRole;
+    registrationTimestamp : Int;
   };
 
   public type UserRole = {
@@ -72,21 +74,31 @@ actor {
     profilePhotoUrl : ?Text;
   };
 
-  let userProfiles = Map.empty<Principal, UserProfile>();
+  public type UserProfileSummary = {
+    principal : Principal;
+    username : Text;
+    displayName : Text;
+    profilePhotoUrl : ?Text;
+    verified : Bool;
+    role : UserRole;
+    registrationTimestamp : Int;
+  };
+
+  let userProfiles = Map.empty<Principal, UserProfileV2>();
   let posts = Map.empty<PostId, NewsPost>();
   let comments = Map.empty<CommentId, Comment>();
   let postLikes = Map.empty<PostId, List.List<Principal>>();
   var nextPostId = 0;
   var nextCommentId = 0;
 
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+  public query ({ caller }) func getCallerUserProfile() : async ?UserProfileV2 {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
     };
     userProfiles.get(caller);
   };
 
-  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfileV2 {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
@@ -110,24 +122,33 @@ actor {
       case (null) { [] };
     };
 
+    // Role assignment: preserve existing role or default to commonUser
+    // SECURITY: Role changes must be done through setUserRole/updateUserRole by admins only
     let role = switch (existingProfile) {
       case (?profile) { profile.role };
       case (null) { #commonUser };
     };
 
+    // Check for username uniqueness
     for ((principal, existingProfile) in userProfiles.entries()) {
       if (principal != caller and existingProfile.username.toLower() == profileInput.username.toLower()) {
         Runtime.trap("Username already exists");
       };
     };
 
-    let profile : UserProfile = {
+    let registrationTimestamp = switch (existingProfile) {
+      case (?profile) { profile.registrationTimestamp };
+      case (null) { Time.now() };
+    };
+
+    let profile : UserProfileV2 = {
       username = profileInput.username;
       displayName = profileInput.displayName;
       profilePhotoUrl = profileInput.profilePhotoUrl;
       verified = verified;
       savedPosts = savedPosts;
-      role;
+      role = role;
+      registrationTimestamp = registrationTimestamp;
     };
 
     userProfiles.add(caller, profile);
@@ -477,6 +498,42 @@ actor {
     switch (userProfiles.get(user)) {
       case (null) { Runtime.trap("User profile not found") };
       case (?profile) { profile.role };
+    };
+  };
+
+  public query ({ caller }) func getAllUsers() : async [UserProfileSummary] {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can access all users");
+    };
+
+    let userList = List.empty<UserProfileSummary>();
+    for ((principal, profile) in userProfiles.entries()) {
+      let summary : UserProfileSummary = {
+        principal;
+        username = profile.username;
+        displayName = profile.displayName;
+        profilePhotoUrl = profile.profilePhotoUrl;
+        verified = profile.verified;
+        role = profile.role;
+        registrationTimestamp = profile.registrationTimestamp;
+      };
+      userList.add(summary);
+    };
+
+    userList.toArray();
+  };
+
+  public shared ({ caller }) func updateUserRole(target : Principal, newRole : UserRole) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can update user roles");
+    };
+
+    switch (userProfiles.get(target)) {
+      case (null) { Runtime.trap("User profile not found") };
+      case (?profile) {
+        let updatedProfile = { profile with role = newRole };
+        userProfiles.add(target, updatedProfile);
+      };
     };
   };
 };

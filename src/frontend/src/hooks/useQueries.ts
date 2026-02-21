@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { UserProfileInput, NewsPost, Comment, PostId, UserRole } from '../backend';
+import type { UserProfileInput, NewsPost, Comment, PostId, UserRole, UserProfileSummary } from '../backend';
+import type { Principal } from '@icp-sdk/core/principal';
 
 export function useGetUserProfile() {
   const { actor, isFetching } = useActor();
@@ -222,5 +223,71 @@ export function useGetSavedPosts() {
       return actor.getSavedPosts();
     },
     enabled: !!actor && !isFetching,
+  });
+}
+
+// Admin-specific hooks
+
+export function useGetAllUsers() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<UserProfileSummary[]>({
+    queryKey: ['allUsers'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllUsers();
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 1000 * 30, // 30 seconds
+  });
+}
+
+export function useUpdateUserRole() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ principal, role }: { principal: Principal; role: UserRole }) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.updateUserRole(principal, role);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+    },
+  });
+}
+
+export function useGrantVerification() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (principal: Principal) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.verifyUser(principal);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+  });
+}
+
+export function useRevokeVerification() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (principal: Principal) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.unverifyUser(principal);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
   });
 }

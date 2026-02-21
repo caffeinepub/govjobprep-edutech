@@ -35,17 +35,27 @@ export interface NewsPost {
   'commentsCount' : bigint,
 }
 export type PostId = bigint;
-export interface UserProfile {
+export interface UserProfileInput {
+  'username' : string,
+  'displayName' : string,
+  'profilePhotoUrl' : [] | [string],
+}
+export interface UserProfileSummary {
+  'principal' : Principal,
+  'verified' : boolean,
+  'username' : string,
+  'displayName' : string,
+  'role' : UserRole,
+  'registrationTimestamp' : bigint,
+  'profilePhotoUrl' : [] | [string],
+}
+export interface UserProfileV2 {
   'verified' : boolean,
   'username' : string,
   'displayName' : string,
   'role' : UserRole,
   'savedPosts' : Array<PostId>,
-  'profilePhotoUrl' : [] | [string],
-}
-export interface UserProfileInput {
-  'username' : string,
-  'displayName' : string,
+  'registrationTimestamp' : bigint,
   'profilePhotoUrl' : [] | [string],
 }
 export type UserRole = { 'author' : null } |
@@ -91,12 +101,13 @@ export interface _SERVICE {
   'deletePost' : ActorMethod<[PostId], undefined>,
   'getAllComments' : ActorMethod<[], Array<Comment>>,
   'getAllPosts' : ActorMethod<[], Array<NewsPost>>,
-  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getAllUsers' : ActorMethod<[], Array<UserProfileSummary>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfileV2]>,
   'getCallerUserRole' : ActorMethod<[], UserRole__1>,
   'getCommentsForPost' : ActorMethod<[PostId], Array<Comment>>,
   'getPostById' : ActorMethod<[PostId], [] | [NewsPost]>,
   'getSavedPosts' : ActorMethod<[], Array<NewsPost>>,
-  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfileV2]>,
   'getUserRole' : ActorMethod<[Principal], UserRole>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'likePost' : ActorMethod<[PostId], undefined>,
@@ -106,6 +117,7 @@ export interface _SERVICE {
   'sharePost' : ActorMethod<[PostId], undefined>,
   'unsavePost' : ActorMethod<[PostId], undefined>,
   'unverifyUser' : ActorMethod<[Principal], undefined>,
+  'updateUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'verifyUser' : ActorMethod<[Principal], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

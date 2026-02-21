@@ -14,6 +14,40 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
+export type CommentId = bigint;
+export interface Comment {
+    id: CommentId;
+    authorVerified: boolean;
+    text: string;
+    authorName: string;
+    author: Principal;
+    timestamp: bigint;
+    postId: PostId;
+}
+export type PostId = bigint;
+export interface UserProfileV2 {
+    verified: boolean;
+    username: string;
+    displayName: string;
+    role: UserRole;
+    savedPosts: Array<PostId>;
+    registrationTimestamp: bigint;
+    profilePhotoUrl?: string;
+}
+export interface UserProfileSummary {
+    principal: Principal;
+    verified: boolean;
+    username: string;
+    displayName: string;
+    role: UserRole;
+    registrationTimestamp: bigint;
+    profilePhotoUrl?: string;
+}
+export interface UserProfileInput {
+    username: string;
+    displayName: string;
+    profilePhotoUrl?: string;
+}
 export interface NewsPost {
     id: PostId;
     authorVerified: boolean;
@@ -26,30 +60,6 @@ export interface NewsPost {
     imageUrl?: ExternalBlob;
     timestamp: bigint;
     commentsCount: bigint;
-}
-export type CommentId = bigint;
-export interface Comment {
-    id: CommentId;
-    authorVerified: boolean;
-    text: string;
-    authorName: string;
-    author: Principal;
-    timestamp: bigint;
-    postId: PostId;
-}
-export type PostId = bigint;
-export interface UserProfileInput {
-    username: string;
-    displayName: string;
-    profilePhotoUrl?: string;
-}
-export interface UserProfile {
-    verified: boolean;
-    username: string;
-    displayName: string;
-    role: UserRole;
-    savedPosts: Array<PostId>;
-    profilePhotoUrl?: string;
 }
 export enum UserRole {
     author = "author",
@@ -71,12 +81,13 @@ export interface backendInterface {
     deletePost(postId: PostId): Promise<void>;
     getAllComments(): Promise<Array<Comment>>;
     getAllPosts(): Promise<Array<NewsPost>>;
-    getCallerUserProfile(): Promise<UserProfile | null>;
+    getAllUsers(): Promise<Array<UserProfileSummary>>;
+    getCallerUserProfile(): Promise<UserProfileV2 | null>;
     getCallerUserRole(): Promise<UserRole__1>;
     getCommentsForPost(postId: PostId): Promise<Array<Comment>>;
     getPostById(id: PostId): Promise<NewsPost | null>;
     getSavedPosts(): Promise<Array<NewsPost>>;
-    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getUserProfile(user: Principal): Promise<UserProfileV2 | null>;
     getUserRole(user: Principal): Promise<UserRole>;
     isCallerAdmin(): Promise<boolean>;
     likePost(postId: PostId): Promise<void>;
@@ -86,5 +97,6 @@ export interface backendInterface {
     sharePost(postId: PostId): Promise<void>;
     unsavePost(postId: PostId): Promise<void>;
     unverifyUser(user: Principal): Promise<void>;
+    updateUserRole(target: Principal, newRole: UserRole): Promise<void>;
     verifyUser(user: Principal): Promise<void>;
 }

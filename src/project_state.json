@@ -1,18 +1,18 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 15,
   "summary": "Social platform called Sanchaari with personalized profiles, unique usernames, photo uploads via dropbox, saved posts, role-based user system (common user, author, group head, content creator, subscriber, administrator), separate Home feed (all posts) and Updates feed (verified users only), and bottom navigation (home/feed, updates/news, resources, profile)",
   "architectural_notes": [
     "Building incrementally - starting with core learning features",
     "Government job exam preparation focus",
-    "Future features planned: study resources, social features (posts/chat), communities, groups, admin management, verification badges",
-    "Admin dashboard for platform management and moderation",
     "Verification badge system to distinguish verified users",
     "Bottom navigation pattern with Home (social feed), Updates (news feed), Resources, and Profile tabs",
     "Unique username enforcement - usernames must be globally unique across all users",
     "Profile photo upload/update capability",
     "Saved posts feature for bookmarking content",
-    "Home feed displays all posts (public), Updates feed displays only verified user posts"
+    "Home feed displays all posts (public), Updates feed displays only verified user posts",
+    "Admin dashboard implemented in phases: Phase 1 (User Management), Phase 2 (Content Moderation), Phase 3 (Test/Resource Management), Phase 4 (Analytics)",
+    "Username 'admin' automatically receives administrator role upon registration - no hardcoded credentials needed"
   ],
   "known_issues": [],
   "isFixRequest": false,
@@ -288,6 +288,86 @@
         "REQ-56"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-create-admindashboardpage-tsx-component-at-admin-route-that-serves-as-the-main-admin-dashboard-interface-accessible-only-to-users-with-administrator-role",
+      "title": "Create AdminDashboardPage.tsx component at /admin route that serves as the main admin dashboard interface, accessible only to users with administrator role",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-usegetallusers-in-usequeries-ts-that-fetches-all-users-from-the-backend-getallusers-function-with-automatic-caching",
+      "title": "Create React Query hook useGetAllUsers in useQueries.ts that fetches all users from the backend getAllUsers function with automatic caching",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-all-users-in-a-searchable-and-filterable-table-on-admindashboardpage-showing-username-display-name-role-verification-status-and-profile-photo-thumbnail",
+      "title": "Display all users in a searchable and filterable table on AdminDashboardPage showing username, display name, role, verification status, and profile photo thumbnail",
+      "reqIds": [
+        "REQ-62"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-useupdateuserrole-in-usequeries-ts-that-calls-the-backend-updateuserrole-function-with-automatic-cache-invalidation-for-user-lists-and-affected-user-profiles",
+      "title": "Create React Query hook useUpdateUserRole in useQueries.ts that calls the backend updateUserRole function with automatic cache invalidation for user lists and affected user profiles",
+      "reqIds": [
+        "REQ-64"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-role-selection-dropdown-to-each-user-row-in-the-admin-user-table-that-allows-administrators-to-change-the-user-s-role-with-immediate-update",
+      "title": "Add role selection dropdown to each user row in the admin user table that allows administrators to change the user's role with immediate update",
+      "reqIds": [
+        "REQ-65"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-grant-verification-and-revoke-verification-action-buttons-to-each-user-row-in-the-admin-user-table-that-toggle-the-user-s-verification-status",
+      "title": "Add grant verification and revoke verification action buttons to each user row in the admin user table that toggle the user's verification status",
+      "reqIds": [
+        "REQ-66"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-usegrantverification-and-userevokeverification-in-usequeries-ts-that-call-the-existing-backend-verification-functions-with-automatic-cache-invalidation-for-user-lists-and-profiles",
+      "title": "Create React Query hooks useGrantVerification and useRevokeVerification in useQueries.ts that call the existing backend verification functions with automatic cache invalidation for user lists and profiles",
+      "reqIds": [
+        "REQ-67"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-view-profile-button-to-each-user-row-that-opens-a-modal-or-side-panel-showing-the-user-s-full-profile-details-including-their-posts-saved-posts-count-and-activity-metrics",
+      "title": "Add view profile button to each user row that opens a modal or side panel showing the user's full profile details including their posts, saved posts count, and activity metrics",
+      "reqIds": [
+        "REQ-68"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-admin-dashboard-route-guard-to-app-tsx-that-checks-if-the-authenticated-user-has-administrator-role-before-allowing-access-to-admin-route-redirecting-non-admin-users-to-home-page",
+      "title": "Add admin dashboard route guard to App.tsx that checks if the authenticated user has administrator role before allowing access to /admin route, redirecting non-admin users to home page",
+      "reqIds": [
+        "REQ-69"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-admin-link-to-bottom-navigation-bar-in-layout-tsx-that-is-visible-only-to-authenticated-users-with-administrator-role",
+      "title": "Add Admin link to bottom navigation bar in Layout.tsx that is visible only to authenticated users with administrator role",
+      "reqIds": [
+        "REQ-70"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -333,12 +413,6 @@
       "reqIds": [
         "REQ-9"
       ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Admin dashboard with user management, content moderation, mock test management, study resource management, and platform analytics",
-      "reqIds": [],
       "status": "pending"
     },
     {
@@ -534,12 +608,6 @@
       "status": "pending"
     },
     {
-      "id": "AR-48",
-      "summary": "Create unique administrator login credentials separate from regular user accounts",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
       "id": "AR-49",
       "summary": "Replace profile photo URL input with file upload dropbox interface (drag-and-drop or file selection)",
       "reqIds": [],
@@ -568,14 +636,6 @@
       "status": "pending"
     },
     {
-      "id": "AR-54",
-      "summary": "Create a dedicated administrator account in backend/main.mo with hardcoded credentials (principal ID) that is pre-initialized with administrator role",
-      "reqIds": [
-        "REQ-50"
-      ],
-      "status": "pending"
-    },
-    {
       "id": "AR-61",
       "summary": "Update the backend getUserProfile and related functions to include the user's role in the returned profile data",
       "reqIds": [
@@ -588,6 +648,80 @@
       "summary": "Update backend migration.mo to include migration logic for the new 'role' field when upgrading from previous UserProfile versions, defaulting existing users to 'common_user'",
       "reqIds": [
         "REQ-58"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-63",
+      "summary": "Phase 1: User Management Dashboard - View all users in searchable/filterable table, grant/revoke verification, change user roles, view individual profiles",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-64",
+      "summary": "Phase 2: Content Moderation Dashboard - Review and delete posts/comments",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-65",
+      "summary": "Phase 3: Mock Test & Resource Management Dashboard - Create/edit tests and questions, upload/organize study materials",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-66",
+      "summary": "Phase 4: Platform Analytics Dashboard - User statistics, engagement metrics, content stats",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-67",
+      "summary": "Create /admin route accessible only to users with administrator role",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-68",
+      "summary": "Implement backend function to retrieve all users with their profiles for admin dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-69",
+      "summary": "Implement backend function to update user roles, restricted to administrator users only",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-71",
+      "summary": "Implement backend function getAllUsers that returns a list of all user profiles with their username, displayName, profilePhotoUrl, role, verified status, and registration timestamp, restricted to administrator role users only",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-74",
+      "summary": "Implement backend function updateUserRole that allows administrators to change any user's role to one of the available roles (common_user, author, group_head, content_creator, subscriber, administrator), restricted to administrator users only",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-75",
+      "summary": "Automatically grant administrator role to any user who registers with username 'admin' during signup",
+      "reqIds": [
+        "REQ-71"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-76",
+      "summary": "Modify the user registration function in backend/main.mo to automatically check if the username is 'admin' (case-insensitive) and assign the 'administrator' role to that user account, overriding any role selection from the registration form",
+      "reqIds": [
+        "REQ-72"
       ],
       "status": "pending"
     }
