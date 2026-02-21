@@ -1,0 +1,598 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 11,
+  "summary": "Social platform called Sanchaari with personalized profiles, unique usernames, photo uploads via dropbox, saved posts, role-based user system (common user, author, group head, content creator, subscriber, administrator), separate Home feed (all posts) and Updates feed (verified users only), and bottom navigation (home/feed, updates/news, resources, profile)",
+  "architectural_notes": [
+    "Building incrementally - starting with core learning features",
+    "Government job exam preparation focus",
+    "Future features planned: study resources, social features (posts/chat), communities, groups, admin management, verification badges",
+    "Admin dashboard for platform management and moderation",
+    "Verification badge system to distinguish verified users",
+    "Bottom navigation pattern with Home (social feed), Updates (news feed), Resources, and Profile tabs",
+    "Unique username enforcement - usernames must be globally unique across all users",
+    "Profile photo upload/update capability",
+    "Saved posts feature for bookmarking content",
+    "Home feed displays all posts (public), Updates feed displays only verified user posts"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-a-user-authentication-system-using-internet-identity-that-allows-users-to-sign-up-and-log-in-securely",
+      "title": "Create a user authentication system using Internet Identity that allows users to sign up and log in securely",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-mock-test-system-where-users-can-take-practice-tests-with-multiple-choice-questions-submit-answers-and-see-their-scores",
+      "title": "Implement a mock test system where users can take practice tests with multiple-choice questions, submit answers, and see their scores",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-study-resources-section-where-users-can-browse-and-access-educational-materials-organized-by-subject-categories",
+      "title": "Create a study resources section where users can browse and access educational materials organized by subject categories",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-user-profile-page-that-displays-user-information-test-history-and-performance-statistics",
+      "title": "Build a user profile page that displays user information, test history, and performance statistics",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-cohesive-professional-ui-theme-with-a-clean-layout-suitable-for-an-educational-platform-using-colors-that-convey-trust-and-focus-avoid-blue-and-purple-and-apply-this-theme-consistently-across-all-pages",
+      "title": "Design a cohesive, professional UI theme with a clean layout suitable for an educational platform, using colors that convey trust and focus (avoid blue and purple), and apply this theme consistently across all pages",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-news-feed-page-at-news-route-that-displays-all-news-posts-with-post-titles-content-preview-author-information-timestamps-like-counts-comment-counts-and-share-counts",
+      "title": "Create a news feed page at /news route that displays all news posts with post titles, content preview, author information, timestamps, like counts, comment counts, and share counts",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-detailed-post-view-page-at-news-postid-that-shows-the-full-post-content-attached-image-if-present-all-comments-with-author-names-and-timestamps-and-interactive-buttons-for-liking-commenting-and-sharing",
+      "title": "Create a detailed post view page at /news/:postId that shows the full post content, attached image if present, all comments with author names and timestamps, and interactive buttons for liking, commenting, and sharing",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-post-creation-form-accessible-from-the-news-feed-page-that-allows-authenticated-users-to-create-new-posts-with-title-content-text-area-and-optional-image-url-input",
+      "title": "Implement a post creation form accessible from the news feed page that allows authenticated users to create new posts with title, content text area, and optional image URL input",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-for-news-feed-operations-including-fetching-all-posts-fetching-single-post-with-comments-creating-posts-adding-comments-liking-posts-and-sharing-posts-with-automatic-cache-invalidation",
+      "title": "Create React Query hooks for news feed operations including fetching all posts, fetching single post with comments, creating posts, adding comments, liking posts, and sharing posts with automatic cache invalidation",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-navigation-link-to-the-news-feed-in-the-main-application-header-navigation-menu-positioned-alongside-existing-links-for-tests-resources-and-profile",
+      "title": "Add navigation link to the news feed in the main application header navigation menu, positioned alongside existing links for Tests, Resources, and Profile",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-verification-badge-icon-next-to-verified-user-names-on-the-news-feed-post-cards",
+      "title": "Display a verification badge icon next to verified user names on the news feed post cards",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-verification-badge-icon-next-to-the-author-name-on-the-post-detail-page",
+      "title": "Display a verification badge icon next to the author name on the post detail page",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-verification-badge-icons-next-to-verified-commenters-names-in-the-comments-section-of-the-post-detail-page",
+      "title": "Display verification badge icons next to verified commenters' names in the comments section of the post detail page",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-verification-badge-on-the-user-profile-page-if-the-user-is-verified",
+      "title": "Display verification badge on the user profile page if the user is verified",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-application-title-from-govprep-learning-to-sanchaari-in-frontend-index-html-and-update-any-references-in-layout-tsx-or-other-components-that-display-the-app-name",
+      "title": "Change the application title from 'GovPrep Learning' to 'Sanchaari' in frontend/index.html and update any references in Layout.tsx or other components that display the app name",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redirect-the-home-route-to-display-the-news-feed-page-instead-of-the-current-landing-page-with-hero-section-making-social-feeds-the-default-landing-page",
+      "title": "Redirect the home route '/' to display the news feed page instead of the current landing page with hero section, making social feeds the default landing page",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-top-navigation-header-with-a-bottom-navigation-bar-in-layout-tsx-containing-four-navigation-options-home-route-to-news-feed-updates-route-to-news-feed-resources-route-to-resources-page-and-profile-route-to-profile-page",
+      "title": "Replace the top navigation header with a bottom navigation bar in Layout.tsx containing four navigation options: Home (route to news feed), Updates (route to news feed), Resources (route to resources page), and Profile (route to profile page)",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-usesavepost-for-saving-posts-with-automatic-cache-invalidation-for-saved-posts-and-user-profile-queries",
+      "title": "Create React Query hook useSavePost for saving posts, with automatic cache invalidation for saved posts and user profile queries",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-useunsavepost-for-unsaving-posts-with-automatic-cache-invalidation-for-saved-posts-and-user-profile-queries",
+      "title": "Create React Query hook useUnsavePost for unsaving posts, with automatic cache invalidation for saved posts and user profile queries",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-usegetsavedposts-for-fetching-the-authenticated-user-s-saved-posts-from-the-backend",
+      "title": "Create React Query hook useGetSavedPosts for fetching the authenticated user's saved posts from the backend",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-save-unsave-button-to-post-cards-on-newspage-and-postdetailpage-that-allows-authenticated-users-to-save-or-unsave-posts-with-visual-indicator-showing-saved-state",
+      "title": "Add save/unsave button to post cards on NewsPage and PostDetailPage that allows authenticated users to save or unsave posts, with visual indicator showing saved state",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-saved-posts-section-to-the-profilepage-that-displays-all-posts-saved-by-the-user-using-the-usegetsavedposts-hook-showing-post-cards-in-a-grid-or-list-layout",
+      "title": "Add a 'Saved Posts' section to the ProfilePage that displays all posts saved by the user using the useGetSavedPosts hook, showing post cards in a grid or list layout",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-useupdateprofilephoto-for-updating-the-user-s-profile-photo-url",
+      "title": "Create React Query hook useUpdateProfilePhoto for updating the user's profile photo URL",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-useupdatedisplayname-for-updating-the-user-s-display-name",
+      "title": "Create React Query hook useUpdateDisplayName for updating the user's display name",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-profile-photo-upload-edit-functionality-to-profilepage-with-an-input-field-for-image-url-and-preview-of-current-photo-allowing-users-to-update-their-profile-photo",
+      "title": "Add profile photo upload/edit functionality to ProfilePage with an input field for image URL and preview of current photo, allowing users to update their profile photo",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-display-name-edit-functionality-to-profilepage-with-an-input-field-that-allows-users-to-update-their-display-name-with-validation-and-save-button",
+      "title": "Add display name edit functionality to ProfilePage with an input field that allows users to update their display name, with validation and save button",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-user-profile-photos-next-to-usernames-throughout-the-application-including-post-cards-post-detail-page-author-section-and-comment-author-names",
+      "title": "Display user profile photos next to usernames throughout the application including post cards, post detail page author section, and comment author names",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-role-selection-dropdown-to-the-registerpage-tsx-signup-form-with-options-common-user-author-group-head-content-creator-subscriber",
+      "title": "Add role selection dropdown to the RegisterPage.tsx signup form with options: Common User, Author, Group Head, Content Creator, Subscriber",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-homepage-tsx-that-displays-all-posts-regardless-of-verification-status-separate-from-the-updates-news-feed",
+      "title": "Create a new HomePage.tsx that displays all posts regardless of verification status, separate from the Updates/News feed",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-newspage-tsx-to-filter-and-display-only-posts-from-verified-users",
+      "title": "Update NewsPage.tsx to filter and display only posts from verified users",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restrict-post-creation-on-newspage-to-only-verified-users-by-hiding-or-disabling-the-createpostform-for-unverified-users",
+      "title": "Restrict post creation on NewsPage to only verified users by hiding or disabling the CreatePostForm for unverified users",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-app-tsx-routing-to-ensure-route-renders-homepage-with-all-posts-and-news-or-updates-route-renders-newspage-with-verified-only-posts",
+      "title": "Update App.tsx routing to ensure '/' route renders HomePage with all posts and '/news' or '/updates' route renders NewsPage with verified-only posts",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-profile-photo-url-input-field-in-profilepage-tsx-with-a-file-upload-dropbox-component-that-accepts-drag-and-drop-or-file-selection-from-the-user-s-device",
+      "title": "Replace the profile photo URL input field in ProfilePage.tsx with a file upload dropbox component that accepts drag-and-drop or file selection from the user's device",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-image-file-upload-handling-that-converts-uploaded-files-to-data-urls-or-blob-storage-and-updates-the-user-s-profile-photo",
+      "title": "Implement image file upload handling that converts uploaded files to data URLs or blob storage and updates the user's profile photo",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Core learning features and mock tests for government job preparation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "News feed feature with posts, images, comments, and sharing",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Create a backend data model for news posts that includes fields for post ID, author (principal), title, content text, optional image URL, timestamp, like count, and comment count",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Create a backend data model for comments that includes fields for comment ID, post ID reference, author (principal), comment text, and timestamp",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Implement backend functions to create new news posts, retrieve all posts (sorted by newest first), retrieve a single post by ID, and delete posts (only by the author)",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Implement backend functions to add comments to posts, retrieve all comments for a specific post, like/unlike posts, and share posts (increment share count)",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Admin dashboard with user management, content moderation, mock test management, study resource management, and platform analytics",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Verification badge system for users",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add a boolean 'verified' field to the User data model in the backend to track verification status for each user",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Implement backend function to grant verification status to a user by principal ID, restricted to admin users only",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Implement backend function to revoke verification status from a user by principal ID, restricted to admin users only",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Update backend getUserProfile function to return the verification status in the user profile response",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Update backend functions that return post author information to include the author's verification status alongside their username",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Change app title/name to 'Sanchaari'",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Set home page as social feeds (news feed as default landing page)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Allow users to change their profile photo (upload or URL)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Allow users to change their display name",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Implement unique username system for each member (enforce uniqueness, editable)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Move navigation to bottom bar with options: Home (social feed), Updates (news feed), Resources, Profile",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Add saved posts feature on profile page to display news posts saved by the user",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Create backend functions to save/unsave posts and retrieve saved posts for a user",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Add a 'profilePhotoUrl' field (optional Text) to the UserProfile data model in backend/main.mo to store user profile photo URLs",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Add a 'displayName' field (Text) to the UserProfile data model in backend/main.mo separate from username, allowing users to set a custom display name",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Implement backend function to update user profile photo URL, restricted to the authenticated user updating their own profile",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Implement backend function to update user display name, restricted to the authenticated user updating their own profile",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Enforce unique username validation in the backend when creating or updating usernames, ensuring no two users can have the same username (case-insensitive comparison)",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Add 'savedPosts' array field (Array of post IDs) to the UserProfile data model in backend/main.mo to track which posts a user has saved",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Implement backend function to save a post for the authenticated user by adding the post ID to their savedPosts array, preventing duplicates",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Implement backend function to unsave a post for the authenticated user by removing the post ID from their savedPosts array",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Implement backend function to retrieve all saved posts for the authenticated user, returning full post details for each saved post ID in their savedPosts array",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-44",
+      "summary": "Update backend migration.mo to include migration logic for new UserProfile fields (profilePhotoUrl, displayName, savedPosts) when upgrading from previous versions",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-45",
+      "summary": "Split Home and Updates feeds: Home shows all posts (public feed), Updates shows only posts from verified users",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-46",
+      "summary": "Implement role-based user system with 6 roles: common user, author, group head, content creator, subscriber, and administrator",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-47",
+      "summary": "Add role selection during user signup process for roles: common user, author, group head, content creator, subscriber",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-48",
+      "summary": "Create unique administrator login credentials separate from regular user accounts",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-49",
+      "summary": "Replace profile photo URL input with file upload dropbox interface (drag-and-drop or file selection)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-50",
+      "summary": "Restrict Updates feed post creation to verified users only",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-51",
+      "summary": "Add a 'role' field to the UserProfile data model in backend/main.mo with possible values: 'common_user', 'author', 'group_head', 'content_creator', 'subscriber', 'administrator'",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-52",
+      "summary": "Update the user registration process in backend/main.mo to accept a role parameter and assign the selected role to the new user profile",
+      "reqIds": [
+        "REQ-48"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-54",
+      "summary": "Create a dedicated administrator account in backend/main.mo with hardcoded credentials (principal ID) that is pre-initialized with administrator role",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-61",
+      "summary": "Update the backend getUserProfile and related functions to include the user's role in the returned profile data",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-62",
+      "summary": "Update backend migration.mo to include migration logic for the new 'role' field when upgrading from previous UserProfile versions, defaulting existing users to 'common_user'",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "GovPrep Learning",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

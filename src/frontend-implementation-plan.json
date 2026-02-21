@@ -1,0 +1,137 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Implement role-based user system, separate Home/Updates feeds, and file upload for profile photos",
+  "requirements": [
+    {
+      "id": "REQ-49",
+      "summary": "Add role selection dropdown to signup form with user-selectable roles",
+      "acceptanceCriteria": [
+        "Dropdown displays all 5 user-selectable roles with user-friendly labels",
+        "Selected role is passed to the backend registration function",
+        "Administrator option is not available in the dropdown"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/RegisterPage.tsx",
+          "operation": "modify",
+          "description": "Add a role selection dropdown to the registration form with options: Common User, Author, Group Head, Content Creator, Subscriber. Map these labels to the backend UserRole enum values (commonUser, author, groupHead, contentCreator, subscriber). Pass the selected role to the saveCallerUserProfile mutation. Default selection should be 'Common User'."
+        }
+      ]
+    },
+    {
+      "id": "REQ-51",
+      "summary": "Create HomePage that displays all posts regardless of verification status",
+      "acceptanceCriteria": [
+        "HomePage route '/' displays all posts using the existing news feed query",
+        "Posts are shown in reverse chronological order",
+        "All post interaction features (like, comment, share, save) remain functional"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Replace the current landing page content with a full news feed displaying all posts from useGetAllPosts. Reuse the post card UI from NewsPage.tsx including interaction buttons (like, comment, share, save). Show post creation form for authenticated users at the top. Maintain the existing hero/feature section or remove it entirely to focus on the posts feed."
+        }
+      ]
+    },
+    {
+      "id": "REQ-52",
+      "summary": "Filter NewsPage to display only verified users' posts",
+      "acceptanceCriteria": [
+        "NewsPage filters posts to show only those where author.verified is true",
+        "Unverified users' posts are excluded from the Updates feed",
+        "Verified badge is displayed next to author names"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/NewsPage.tsx",
+          "operation": "modify",
+          "description": "Add client-side filtering to the posts retrieved from useGetAllPosts to display only posts where post.authorVerified is true. Display the verified badge icon (frontend/public/assets/generated/verified-badge.dim_24x24.png) next to verified author names. Update the page title/description to clarify this is the 'Updates' feed showing verified content only."
+        }
+      ]
+    },
+    {
+      "id": "REQ-53",
+      "summary": "Restrict post creation on NewsPage to verified users only",
+      "acceptanceCriteria": [
+        "CreatePostForm is only visible/enabled on NewsPage for verified users",
+        "Unverified users see a message explaining that only verified users can post on Updates",
+        "Post creation remains available to all authenticated users on HomePage"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/NewsPage.tsx",
+          "operation": "modify",
+          "description": "Use useGetCallerUserProfile to check if the current user's verified field is true. Only show CreatePostForm if user.verified is true. For unverified users, display an informational message: 'Only verified users can post to Updates. You can still create posts on the Home feed.' Include styling consistent with the app's design."
+        }
+      ]
+    },
+    {
+      "id": "REQ-54",
+      "summary": "Update routing to separate Home (all posts) and Updates (verified posts) pages",
+      "acceptanceCriteria": [
+        "Home route '/' is distinct from Updates/News route",
+        "Bottom navigation 'Home' links to '/'",
+        "Bottom navigation 'Updates' links to '/news' or '/updates'",
+        "Both routes have appropriate titles and components"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the root route '/' to render the modified HomePage component (with full posts feed). Ensure the existing '/news' route renders NewsPage with verified-only filtering. Verify that both routes use appropriate guards (AuthGuard, ProfileGuard) as needed. Update route metadata (page titles) to distinguish between 'Home' and 'Updates'."
+        },
+        {
+          "path": "frontend/src/components/Layout.tsx",
+          "operation": "modify",
+          "description": "Update the bottom navigation to ensure 'Home' icon/link points to '/' and 'Updates' icon/link points to '/news'. Verify navigation labels are clear and consistent with the new page purposes. Maintain the existing navigation structure and styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-55",
+      "summary": "Replace profile photo URL input with file upload dropbox component",
+      "acceptanceCriteria": [
+        "Dropbox interface allows users to drag-and-drop image files or click to select files",
+        "Accepted file types are image formats (jpg, jpeg, png, gif, webp)",
+        "File size validation prevents uploads larger than reasonable limits (e.g., 5MB)",
+        "Preview of selected image is shown before upload"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProfilePhotoUpload.tsx",
+          "operation": "create",
+          "description": "Create a new ProfilePhotoUpload component that provides a drag-and-drop file upload interface. Use the blob-storage component to handle file uploads by converting the selected file to ExternalBlob.fromBytes(). Accept image file types (image/jpeg, image/png, image/gif, image/webp) with a 5MB size limit. Show a preview of the selected image before upload. Display upload progress using withUploadProgress method. Return the ExternalBlob URL via a callback prop for parent component to save. Verify the blob-storage component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ProfilePage.tsx",
+          "operation": "modify",
+          "description": "Replace the profilePhotoUrl text input with the new ProfilePhotoUpload component. When a file is uploaded and an ExternalBlob is returned, call getDirectURL() to get the URL string and update the profile with this URL using useSaveCallerUserProfile mutation. Remove the direct text input for profile photo URL. Maintain existing inline editing UI patterns for other profile fields."
+        }
+      ]
+    },
+    {
+      "id": "REQ-56",
+      "summary": "Implement image file upload handling that updates user profile photo",
+      "acceptanceCriteria": [
+        "Uploaded image files are processed client-side or sent to backend",
+        "Backend stores image data (as blob, data URL, or generates a URL)",
+        "User profile photo is updated with the new image reference",
+        "Profile photo displays correctly throughout the application after upload"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProfilePhotoUpload.tsx",
+          "operation": "modify",
+          "description": "Ensure the ProfilePhotoUpload component properly converts uploaded files to ExternalBlob using ExternalBlob.fromBytes() and tracks upload progress. The component should return the blob's direct URL via getDirectURL() for storage in the user profile. Handle error states and loading states during upload."
+        },
+        {
+          "path": "frontend/src/pages/ProfilePage.tsx",
+          "operation": "modify",
+          "description": "Verify that profile photo URLs retrieved from backend (either ExternalBlob URLs or regular URLs) are displayed correctly in the profile view. Ensure the profile photo displays consistently across the app after upload by using the URL from the updated profile data."
+        }
+      ]
+    }
+  ]
+}

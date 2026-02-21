@@ -1,0 +1,235 @@
+import { Link } from '@tanstack/react-router';
+import { useGetAllPosts, useGetUserProfile, useSavePost, useUnsavePost } from '../hooks/useQueries';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import CreatePostForm from '../components/CreatePostForm';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Avatar, AvatarFallback } from '../components/ui/avatar';
+import { Skeleton } from '../components/ui/skeleton';
+import { Newspaper, Heart, MessageCircle, Share2, Clock, Bookmark, ShieldCheck } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../components/ui/collapsible';
+import { useState, useMemo } from 'react';
+
+export default function NewsPage() {
+  const { data: allPosts, isLoading } = useGetAllPosts();
+  const { data: profile } = useGetUserProfile();
+  const { identity } = useInternetIdentity();
+  const [createFormOpen, setCreateFormOpen] = useState(false);
+  const savePost = useSavePost();
+  const unsavePost = useUnsavePost();
+
+  // Filter posts to show only verified users' posts
+  const posts = useMemo(() => {
+    if (!allPosts) return [];
+    return allPosts.filter((post) => post.authorVerified);
+  }, [allPosts]);
+
+  const formatTimestamp = (timestamp: bigint) => {
+    const date = new Date(Number(timestamp) / 1000000);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  const truncateContent = (content: string, maxLength: number = 200) => {
+    if (content.length <= maxLength) return content;
+    return content.substring(0, maxLength) + '...';
+  };
+
+  const isPostSaved = (postId: bigint) => {
+    if (!profile?.savedPosts) return false;
+    return profile.savedPosts.some((id) => id === postId);
+  };
+
+  const handleToggleSave = (postId: bigint) => {
+    if (isPostSaved(postId)) {
+      unsavePost.mutate(postId);
+    } else {
+      savePost.mutate(postId);
+    }
+  };
+
+  const canPostToUpdates = profile?.verified === true;
+
+  return (
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Newspaper className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">Updates</h1>
+              <p className="text-muted-foreground">Verified content from trusted sources</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Create Post Form - Only for verified users */}
+        {identity && (
+          <div className="mb-8">
+            {canPostToUpdates ? (
+              <Collapsible open={createFormOpen} onOpenChange={setCreateFormOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full mb-4">
+                    {createFormOpen ? 'Hide Create Post' : 'Create New Post'}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CreatePostForm />
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              <Card className="border-2 bg-muted/30">
+                <CardContent className="py-6">
+                  <div className="flex items-start space-x-3">
+                    <ShieldCheck className="w-5 h-5 text-muted-foreground mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-1">
+                        Verified Users Only
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Only verified users can post to Updates. You can still create posts on the{' '}
+                        <Link to="/" className="text-primary hover:underline">
+                          Home feed
+                        </Link>
+                        .
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Posts Feed */}
+        <div className="space-y-6">
+          {isLoading ? (
+            <>
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="border-2">
+                  <CardHeader>
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-20 w-full mb-4" />
+                    <div className="flex space-x-4">
+                      <Skeleton className="h-8 w-20" />
+                      <Skeleton className="h-8 w-20" />
+                      <Skeleton className="h-8 w-20" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </>
+          ) : posts && posts.length > 0 ? (
+            posts.map((post) => (
+              <Card key={post.id.toString()} className="border-2 hover:border-primary/50 transition-colors">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
+                      <CardDescription className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="w-5 h-5">
+                            <AvatarFallback className="text-xs">
+                              {post.authorName.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="flex items-center space-x-1">
+                            <span>By {post.authorName}</span>
+                            <img
+                              src="/assets/generated/verified-badge.dim_24x24.png"
+                              alt="Verified"
+                              className="w-4 h-4 inline-block"
+                            />
+                          </span>
+                        </div>
+                        <span>•</span>
+                        <Clock className="w-3 h-3" />
+                        <span>{formatTimestamp(post.timestamp)}</span>
+                      </CardDescription>
+                    </div>
+                    {identity && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleToggleSave(post.id)}
+                        disabled={savePost.isPending || unsavePost.isPending}
+                      >
+                        <Bookmark
+                          className={`w-5 h-5 ${
+                            isPostSaved(post.id) ? 'fill-primary text-primary' : 'text-muted-foreground'
+                          }`}
+                        />
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4 whitespace-pre-wrap">
+                    {truncateContent(post.content)}
+                  </p>
+
+                  {post.imageUrl && (
+                    <div className="mb-4 rounded-lg overflow-hidden">
+                      <img
+                        src={post.imageUrl.getDirectURL()}
+                        alt={post.title}
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Heart className="w-4 h-4" />
+                        <span>{post.likes.toString()}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>{post.commentsCount.toString()}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Share2 className="w-4 h-4" />
+                        <span>{post.shares.toString()}</span>
+                      </div>
+                    </div>
+                    <Link to="/news/$postId" params={{ postId: post.id.toString() }}>
+                      <Button variant="outline" size="sm">
+                        Read More
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card className="border-2">
+              <CardContent className="py-12 text-center">
+                <Newspaper className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <p className="text-muted-foreground">No verified posts yet</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Check back later for updates from verified users
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
